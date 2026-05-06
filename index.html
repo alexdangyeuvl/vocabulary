@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vocab Garden 🌱 — Learn English the Cute Way</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ DESIGN TOKENS ============ */
+  :root {
+    --cream:        #FFF8EE;
+    --cream-deep:   #FFEFD6;
+    --peach:        #FFD3B6;
+    --coral:        #FF8A7A;
+    --rose:         #FFB5C5;
+    --mint:         #B8E6CC;
+    --mint-deep:    #6FCF97;
+    --sky:          #B5DCFF;
+    --lavender:     #D4C5F9;
+    --butter:       #FFE08A;
+    --sun:          #FFC857;
+    --ink:          #3B2A2F;
+    --ink-soft:     #6B5963;
+    --ink-faint:    #A8989E;
+    --paper:        #FFFDF7;
+    --shadow:       6px 6px 0 0 var(--ink);
+    --shadow-sm:    3px 3px 0 0 var(--ink);
+    --shadow-soft:  0 12px 32px -8px rgba(59, 42, 47, 0.18);
+
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body:    "Plus Jakarta Sans", -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    overflow-x: hidden;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 12% 18%, var(--peach) 0%, transparent 22%),
+      radial-gradient(circle at 88% 8%, var(--rose) 0%, transparent 18%),
+      radial-gradient(circle at 92% 78%, var(--mint) 0%, transparent 22%),
+      radial-gradient(circle at 8% 88%, var(--sky) 0%, transparent 20%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  /* paper grain overlay */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    opacity: .35;
+    z-index: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.23  0 0 0 0 0.16  0 0 0 0 0.18  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  button:focus-visible { outline: 3px solid var(--coral); outline-offset: 3px; border-radius: 8px; }
+
+  /* ============ LAYOUT ============ */
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 80px;
+  }
+
+  /* ============ HEADER ============ */
+  header.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 28px;
+    letter-spacing: -0.02em;
+  }
+  .brand .leaf {
+    width: 44px; height: 44px;
+    background: var(--mint-deep);
+    border: 2.5px solid var(--ink);
+    border-radius: 50% 0 50% 50%;
+    transform: rotate(-25deg);
+    box-shadow: var(--shadow-sm);
+    display: grid; place-items: center;
+    font-size: 22px;
+  }
+  .brand .leaf::after {
+    content: "🌱";
+    transform: rotate(25deg);
+  }
+  .brand em { color: var(--coral); font-style: italic; }
+
+  .top-stats {
+    display: flex; gap: 12px; flex-wrap: wrap;
+  }
+
+  .pill {
+    background: var(--paper);
+    border: 2.5px solid var(--ink);
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .15s ease;
+  }
+  .pill:hover { transform: translate(-1px,-1px); }
+  .pill .icon { font-size: 18px; }
+  .pill .num { color: var(--coral); font-family: var(--font-display); font-weight: 800; font-size: 18px; }
+  .pill.streak .num { color: var(--coral); }
+  .pill.xp .num     { color: var(--mint-deep); }
+  .pill.gems .num   { color: var(--lavender); filter: brightness(.7); }
+
+  /* ============ HERO + STREAK CALENDAR ============ */
+  .hero {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 28px;
+    padding: 28px 32px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 28px;
+    align-items: center;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    width: 220px; height: 220px;
+    background: var(--butter);
+    border-radius: 50%;
+    top: -110px; right: -60px;
+    border: 3px solid var(--ink);
+    z-index: 0;
+  }
+  .hero::after {
+    content: "✦";
+    position: absolute;
+    top: 24px; right: 38px;
+    font-size: 32px;
+    color: var(--ink);
+    z-index: 1;
+  }
+  .hero > * { position: relative; z-index: 2; }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 4.2vw, 52px);
+    line-height: 1.02;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 12px;
+  }
+  .hero h1 .underline {
+    background: linear-gradient(transparent 60%, var(--rose) 60%);
+    padding: 0 4px;
+  }
+  .hero h1 i { color: var(--coral); }
+  .hero p.lead { color: var(--ink-soft); font-size: 17px; max-width: 38ch; margin-bottom: 20px; }
+
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    background: var(--coral);
+    color: var(--paper);
+    border: 2.5px solid var(--ink);
+    padding: 13px 22px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 15px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .12s ease, box-shadow .12s ease;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 0 var(--ink); }
+  .btn:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 0 var(--ink); }
+  .btn.ghost { background: var(--paper); color: var(--ink); }
+  .btn.mint { background: var(--mint-deep); }
+  .btn.sun { background: var(--sun); color: var(--ink); }
+
+  /* streak calendar widget */
+  .streak-card {
+    background: var(--cream-deep);
+    border: 2.5px solid var(--ink);
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: var(--shadow-sm);
+  }
+  .streak-card h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .streak-card h3 .flame { font-size: 28px; }
+  .streak-card .sub { color: var(--ink-soft); font-size: 13px; margin-bottom: 16px; }
+
+  .week-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+  .day-cell {
+    aspect-ratio: 1;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink-faint);
+    position: relative;
+    transition: transform .15s ease;
+  }
+  .day-cell.done {
+    background: var(--coral);
+    color: var(--paper);
+  }
+  .day-cell.done::after {
+    content: "🔥";
+    position: absolute;
+    top: -10px; right: -8px;
+    font-size: 16px;
+    filter: drop-shadow(1px 1px 0 var(--ink));
+  }
+  .day-cell.today {
+    background: var(--butter);
+    color: var(--ink);
+    box-shadow: var(--shadow-sm);
+    transform: scale(1.05);
+  }
+  .day-cell .label {
+    position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; color: var(--ink-soft); font-weight: 600;
+  }
+  .week-row { margin-top: 28px; }
+
+  /* ============ NAV TABS ============ */
+  nav.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding: 8px;
+    background: var(--paper);
+    border: 2.5px solid var(--ink);
+    border-radius: 18px;
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+  }
+  nav.tabs button {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink-soft);
+    transition: all .18s ease;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    white-space: nowrap;
+  }
+  nav.tabs button:hover { color: var(--ink); background: var(--cream-deep); }
+  nav.tabs button.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  nav.tabs button.active .emoji { transform: scale(1.2) rotate(-8deg); }
+  nav.tabs button .emoji { transition: transform .25s ease; display: inline-block; }
+
+  /* ============ VIEWS ============ */
+  .view { display: none; animation: fadeUp .35s ease; }
+  .view.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== LIBRARY VIEW ===== */
+  .library-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 18px; flex-wrap: wrap; gap: 12px;
+  }
+  .library-header h2 {
+    font-family: var(--font-display);
+    font-size: 32px; letter-spacing: -0.02em;
+  }
+  .search-box {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--paper);
+    border: 2.5px solid var(--ink);
+    border-radius: 14px;
+    padding: 8px 14px;
+    box-shadow: var(--shadow-sm);
+    min-width: 240px;
+  }
+  .search-box input {
+    border: none; outline: none; font-family: inherit; font-size: 14px;
+    background: transparent; flex: 1; color: var(--ink);
+  }
+  .search-box input::placeholder { color: var(--ink-faint); }
+
+  .vocab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
+  }
+  .word-card {
+    background: var(--paper);
+    border: 2.5px solid var(--ink);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .18s ease, box-shadow .18s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .word-card:hover { transform: translate(-3px,-3px); box-shadow: 6px 6px 0 0 var(--ink); }
+  .word-card .tag {
+    position: absolute;
+    top: 16px; right: 16px;
+    font-size: 11px;
+    background: var(--cream-deep);
+    border: 2px solid var(--ink);
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+  .word-card .word {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+    padding-right: 60px;
+  }
+  .word-card .ipa {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--coral);
+    font-size: 15px;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .word-card .ipa .speak {
+    width: 26px; height: 26px;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    background: var(--butter);
+    display: grid; place-items: center;
+    font-size: 12px;
+    transition: transform .15s ease;
+  }
+  .word-card .ipa .speak:hover { transform: scale(1.1) rotate(-8deg); }
+  .word-card .vn {
+    color: var(--ink);
+    font-size: 14px;
+    margin-bottom: 12px;
+    padding-left: 12px;
+    border-left: 3px solid var(--mint-deep);
+  }
+  .word-card .vn b { color: var(--mint-deep); }
+  .word-card .meta {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    font-size: 12px; color: var(--ink-soft);
+  }
+  .word-card .meta span b { color: var(--ink); }
+
+  /* ===== REVIEW (flashcards) ===== */
+  .review-stage {
+    max-width: 580px;
+    margin: 0 auto;
+  }
+  .progress-bar {
+    height: 14px;
+    background: var(--paper);
+    border: 2.5px solid var(--ink);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .progress-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--coral) 0%, var(--sun) 100%);
+    width: 0%;
+    transition: width .4s cubic-bezier(.4, 1.4, .6, 1);
+    border-right: 2px solid var(--ink);
+  }
+  .progress-text {
+    text-align: center;
+    font-size: 13px; color: var(--ink-soft);
+    margin-top: -16px; margin-bottom: 24px;
+    font-weight: 600;
+  }
+
+  .flashcard-wrap {
+    perspective: 1200px;
+    margin-bottom: 24px;
+  }
+  .flashcard {
+    position: relative;
+    width: 100%;
+    height: 380px;
+    transform-style: preserve-3d;
+    transition: transform .7s cubic-bezier(.4, 1.5, .5, 1);
+    cursor: pointer;
+  }
+  .flashcard.flipped { transform: rotateY(180deg); }
+  .flashcard .face {
+    position: absolute; inset: 0;
+    border: 3px solid var(--ink);
+    border-radius: 28px;
+    padding: 32px;
+    backface-visibility: hidden;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+  }
+  .flashcard .front {
+    background: var(--paper);
+    align-items: center; justify-content: center; text-align: center;
+  }
+  .flashcard .front .word {
+    font-family: var(--font-display);
+    font-size: 56px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 12px;
+  }
+  .flashcard .front .ipa {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--coral);
+    font-size: 22px;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 18px;
+  }
+  .flashcard .front .ipa .speak {
+    width: 38px; height: 38px;
+    border: 2.5px solid var(--ink);
+    border-radius: 50%;
+    background: var(--butter);
+    display: grid; place-items: center;
+    font-size: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .15s ease;
+  }
+  .flashcard .front .ipa .speak:hover { transform: scale(1.08) rotate(-8deg); }
+  .flashcard .front .hint {
+    color: var(--ink-faint); font-size: 13px; font-weight: 600;
+    border: 2px dashed var(--ink-faint);
+    padding: 6px 14px; border-radius: 999px;
+    margin-top: auto;
+  }
+  .flashcard .back {
+    background: var(--cream-deep);
+    transform: rotateY(180deg);
+    overflow-y: auto;
+  }
+  .flashcard .back .row { margin-bottom: 14px; }
+  .flashcard .back .row .label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 4px;
+  }
+  .flashcard .back .row .val { font-size: 16px; line-height: 1.5; }
+  .flashcard .back .row.vn .val { font-weight: 600; color: var(--mint-deep); filter: brightness(.85); }
+  .flashcard .back .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .flashcard .back .chip {
+    font-size: 12px; font-weight: 600;
+    padding: 4px 10px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: var(--paper);
+  }
+  .flashcard .back .chip.ant { background: var(--rose); }
+  .flashcard .back .chip.syn { background: var(--mint); }
+
+  .review-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+  .review-actions button {
+    padding: 14px 8px;
+    border: 2.5px solid var(--ink);
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .12s ease;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .review-actions button:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 0 var(--ink); }
+  .review-actions button .em { font-size: 22px; }
+  .review-actions .again { background: var(--rose); }
+  .review-actions .good  { background: var(--butter); }
+  .review-actions .easy  { background: var(--mint); }
+
+  /* ===== TEST ===== */
+  .test-container {
+    max-width: 640px; margin: 0 auto;
+  }
+  .test-card {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 28px;
+    padding: 32px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+  .test-card .q-num {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--coral); margin-bottom: 8px;
+  }
+  .test-card .q-text {
+    font-family: var(--font-display);
+    font-size: 26px; font-weight: 700;
+    line-height: 1.25; margin-bottom: 6px;
+  }
+  .test-card .q-ipa {
+    font-style: italic; color: var(--ink-soft); margin-bottom: 22px;
+    font-family: var(--font-display);
+  }
+  .options { display: grid; gap: 10px; }
+  .option {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px;
+    background: var(--cream);
+    border: 2.5px solid var(--ink);
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 15px;
+    text-align: left;
+    transition: transform .12s ease, background .15s;
+    box-shadow: var(--shadow-sm);
+  }
+  .option:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 0 var(--ink); background: var(--cream-deep); }
+  .option .letter {
+    width: 28px; height: 28px;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    background: var(--paper);
+    display: grid; place-items: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .option.correct { background: var(--mint); }
+  .option.correct .letter { background: var(--mint-deep); color: var(--paper); }
+  .option.wrong { background: var(--rose); }
+  .option.wrong .letter { background: var(--coral); color: var(--paper); }
+  .option:disabled { cursor: default; }
+
+  .feedback {
+    margin-top: 18px;
+    padding: 14px 18px;
+    border: 2.5px solid var(--ink);
+    border-radius: 14px;
+    font-weight: 600;
+    display: none;
+    align-items: center; gap: 10px;
+  }
+  .feedback.show { display: flex; }
+  .feedback.right { background: var(--mint); }
+  .feedback.wrong { background: var(--rose); }
+  .feedback .em { font-size: 24px; }
+
+  /* test results screen */
+  .results {
+    text-align: center;
+    padding: 40px 24px;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+  }
+  .results .trophy {
+    font-size: 88px;
+    margin-bottom: 8px;
+    display: inline-block;
+    animation: bounce 1s cubic-bezier(.4, 1.6, .5, 1) infinite alternate;
+  }
+  @keyframes bounce {
+    from { transform: translateY(0) rotate(-5deg); }
+    to   { transform: translateY(-10px) rotate(5deg); }
+  }
+  .results h2 {
+    font-family: var(--font-display);
+    font-size: 38px;
+    margin-bottom: 6px;
+  }
+  .results .score-big {
+    font-family: var(--font-display);
+    font-size: 72px; font-weight: 800;
+    color: var(--coral);
+    margin: 12px 0;
+    letter-spacing: -0.03em;
+  }
+  .results .score-big small { color: var(--ink-faint); font-weight: 600; font-size: 32px; }
+  .results .msg { color: var(--ink-soft); margin-bottom: 24px; max-width: 40ch; margin-left: auto; margin-right: auto; }
+
+  /* test setup */
+  .test-setup {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 28px;
+    padding: 36px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .test-setup h2 {
+    font-family: var(--font-display);
+    font-size: 34px; margin-bottom: 8px;
+  }
+  .test-setup p { color: var(--ink-soft); margin-bottom: 24px; }
+  .test-setup .options-row {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .test-setup .opt {
+    padding: 12px 22px;
+    border: 2.5px solid var(--ink);
+    background: var(--cream);
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 15px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .12s;
+  }
+  .test-setup .opt:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 0 var(--ink); }
+  .test-setup .opt.selected { background: var(--coral); color: var(--paper); }
+
+  /* ============ MISC ============ */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-soft);
+  }
+  .empty .em { font-size: 64px; display: block; margin-bottom: 12px; }
+
+  /* confetti for streak */
+  .confetti {
+    position: fixed;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 800px) {
+    .hero { grid-template-columns: 1fr; padding: 24px; }
+    .hero::before { width: 140px; height: 140px; top: -70px; right: -40px; }
+    .flashcard { height: 340px; }
+    .flashcard .front .word { font-size: 42px; }
+    .review-actions { grid-template-columns: 1fr; }
+    .top-stats { width: 100%; }
+    .top-stats .pill { flex: 1; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ============ TOP BAR ============ -->
+  <header class="top">
+    <div class="brand">
+      <span class="leaf"></span>
+      <span>Vocab <em>Garden</em></span>
+    </div>
+    <div class="top-stats">
+      <div class="pill streak"><span class="icon">🔥</span><span class="num" id="stat-streak">0</span><span>day streak</span></div>
+      <div class="pill xp"><span class="icon">🌟</span><span class="num" id="stat-xp">0</span><span>XP</span></div>
+      <div class="pill gems"><span class="icon">💎</span><span class="num" id="stat-gems">0</span><span>gems</span></div>
+    </div>
+  </header>
+
+  <!-- ============ HERO + STREAK ============ -->
+  <section class="hero">
+    <div>
+      <h1>Grow your <span class="underline">words</span><br>like a <i>tiny garden</i>.</h1>
+      <p class="lead">A friendly little dictionary for your daily English practice — with IPA, Vietnamese meanings, and synonyms straight from Cambridge.</p>
+      <div class="cta-row">
+        <button class="btn" onclick="setView('review')">Start today's review →</button>
+        <button class="btn ghost" onclick="setView('test')">Take a quick test</button>
+      </div>
+    </div>
+    <div class="streak-card">
+      <h3><span class="flame">🔥</span> This week</h3>
+      <p class="sub">Keep the flame alive — practice every day!</p>
+      <div class="week-row" id="week-row"></div>
+    </div>
+  </section>
+
+  <!-- ============ TABS ============ -->
+  <nav class="tabs" role="tablist">
+    <button class="active" data-view="library"><span class="emoji">📚</span> Library</button>
+    <button data-view="review"><span class="emoji">🃏</span> Review</button>
+    <button data-view="test"><span class="emoji">✏️</span> Test</button>
+  </nav>
+
+  <!-- ============ LIBRARY VIEW ============ -->
+  <section class="view active" id="view-library">
+    <div class="library-header">
+      <h2>Your word garden 🌿</h2>
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" id="search" placeholder="Search a word…" />
+      </div>
+    </div>
+    <div class="vocab-grid" id="vocab-grid"></div>
+  </section>
+
+  <!-- ============ REVIEW VIEW ============ -->
+  <section class="view" id="view-review">
+    <div class="review-stage">
+      <div class="progress-bar"><div class="fill" id="rev-fill"></div></div>
+      <div class="progress-text" id="rev-progress">Card 1 of 10</div>
+
+      <div class="flashcard-wrap">
+        <div class="flashcard" id="flashcard" onclick="flipCard()">
+          <div class="face front">
+            <div class="word" id="fc-word">—</div>
+            <div class="ipa">
+              <span id="fc-ipa">—</span>
+              <button class="speak" onclick="event.stopPropagation(); speakCurrent()">🔊</button>
+            </div>
+            <div class="hint">tap card to reveal</div>
+          </div>
+          <div class="face back" id="fc-back"></div>
+        </div>
+      </div>
+
+      <div class="review-actions">
+        <button class="again" onclick="rate('again')"><span class="em">🌱</span>Again</button>
+        <button class="good"  onclick="rate('good')"><span class="em">🌿</span>Good</button>
+        <button class="easy"  onclick="rate('easy')"><span class="em">🌳</span>Easy</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TEST VIEW ============ -->
+  <section class="view" id="view-test">
+    <div class="test-container" id="test-container"></div>
+  </section>
+</div>
+
+<script>
+/* ============================================================
+   VOCABULARY DATA — modeled on Cambridge Dictionary entries
+   Format: word, IPA (UK), part of speech, English definition,
+   Vietnamese meaning, example, synonyms, antonyms
+   ============================================================ */
+const VOCAB = [
+  {
+    word: "abundant",
+    ipa: "/əˈbʌn.dənt/",
+    pos: "adjective",
+    def: "existing in large quantities; more than enough",
+    vn: "phong phú, dồi dào",
+    ex: "Fish are abundant in the lake.",
+    syn: ["plentiful", "ample", "copious"],
+    ant: ["scarce", "rare", "sparse"]
+  },
+  {
+    word: "benevolent",
+    ipa: "/bəˈnev.əl.ənt/",
+    pos: "adjective",
+    def: "kind and helpful",
+    vn: "nhân từ, tốt bụng",
+    ex: "She was a benevolent old lady who helped everyone.",
+    syn: ["kind", "compassionate", "generous"],
+    ant: ["cruel", "malevolent", "selfish"]
+  },
+  {
+    word: "candid",
+    ipa: "/ˈkæn.dɪd/",
+    pos: "adjective",
+    def: "honest and telling the truth, especially about something difficult",
+    vn: "thẳng thắn, chân thật",
+    ex: "To be candid, I don't like your new haircut.",
+    syn: ["frank", "open", "sincere"],
+    ant: ["dishonest", "deceitful", "evasive"]
+  },
+  {
+    word: "diligent",
+    ipa: "/ˈdɪl.ɪ.dʒənt/",
+    pos: "adjective",
+    def: "careful and using a lot of effort",
+    vn: "siêng năng, chăm chỉ",
+    ex: "She's a diligent student who always finishes her homework.",
+    syn: ["hardworking", "industrious", "assiduous"],
+    ant: ["lazy", "idle", "negligent"]
+  },
+  {
+    word: "eloquent",
+    ipa: "/ˈel.ə.kwənt/",
+    pos: "adjective",
+    def: "giving a clear, strong message; expressing yourself well",
+    vn: "hùng hồn, lưu loát",
+    ex: "He gave an eloquent speech at the wedding.",
+    syn: ["articulate", "expressive", "fluent"],
+    ant: ["inarticulate", "tongue-tied", "halting"]
+  },
+  {
+    word: "frugal",
+    ipa: "/ˈfruː.ɡəl/",
+    pos: "adjective",
+    def: "careful when using money or food, or something that is small in amount or cost",
+    vn: "tiết kiệm, đạm bạc",
+    ex: "She lives a frugal life and saves most of her income.",
+    syn: ["thrifty", "economical", "sparing"],
+    ant: ["wasteful", "extravagant", "lavish"]
+  },
+  {
+    word: "gregarious",
+    ipa: "/ɡrɪˈɡeə.ri.əs/",
+    pos: "adjective",
+    def: "liking to be with other people",
+    vn: "hòa đồng, thích giao du",
+    ex: "He is a gregarious person who loves parties.",
+    syn: ["sociable", "outgoing", "convivial"],
+    ant: ["introverted", "reclusive", "antisocial"]
+  },
+  {
+    word: "humble",
+    ipa: "/ˈhʌm.bəl/",
+    pos: "adjective",
+    def: "not proud or not believing that you are important",
+    vn: "khiêm tốn, nhún nhường",
+    ex: "Despite his fame, he remained humble.",
+    syn: ["modest", "unassuming", "meek"],
+    ant: ["arrogant", "proud", "haughty"]
+  },
+  {
+    word: "intricate",
+    ipa: "/ˈɪn.trɪ.kət/",
+    pos: "adjective",
+    def: "having a lot of small parts that are arranged in a complicated way",
+    vn: "phức tạp, tinh xảo",
+    ex: "The watch has an intricate mechanism.",
+    syn: ["complex", "elaborate", "complicated"],
+    ant: ["simple", "plain", "straightforward"]
+  },
+  {
+    word: "jubilant",
+    ipa: "/ˈdʒuː.bɪ.lənt/",
+    pos: "adjective",
+    def: "feeling or expressing great happiness, especially because of a success",
+    vn: "vui mừng khôn xiết, hân hoan",
+    ex: "The team was jubilant after winning the championship.",
+    syn: ["joyful", "elated", "exultant"],
+    ant: ["miserable", "dejected", "despondent"]
+  },
+  {
+    word: "keen",
+    ipa: "/kiːn/",
+    pos: "adjective",
+    def: "very interested, eager, or wanting something very much",
+    vn: "hăng hái, say mê",
+    ex: "She's keen to start her new job.",
+    syn: ["eager", "enthusiastic", "avid"],
+    ant: ["apathetic", "indifferent", "reluctant"]
+  },
+  {
+    word: "lucid",
+    ipa: "/ˈluː.sɪd/",
+    pos: "adjective",
+    def: "clear and easy to understand",
+    vn: "rõ ràng, sáng sủa",
+    ex: "Her explanation was lucid and concise.",
+    syn: ["clear", "coherent", "intelligible"],
+    ant: ["confusing", "unclear", "muddled"]
+  },
+  {
+    word: "meticulous",
+    ipa: "/məˈtɪk.jə.ləs/",
+    pos: "adjective",
+    def: "very careful and with great attention to every detail",
+    vn: "tỉ mỉ, kỹ lưỡng",
+    ex: "He keeps meticulous records of his expenses.",
+    syn: ["thorough", "scrupulous", "painstaking"],
+    ant: ["careless", "sloppy", "negligent"]
+  },
+  {
+    word: "novel",
+    ipa: "/ˈnɒv.əl/",
+    pos: "adjective",
+    def: "new and original, not like anything seen before",
+    vn: "mới mẻ, độc đáo",
+    ex: "She came up with a novel solution to the problem.",
+    syn: ["new", "original", "innovative"],
+    ant: ["old", "traditional", "conventional"]
+  },
+  {
+    word: "obscure",
+    ipa: "/əbˈskjʊər/",
+    pos: "adjective",
+    def: "not known to many people; difficult to understand",
+    vn: "mơ hồ, ít người biết",
+    ex: "The poem's meaning is obscure.",
+    syn: ["unclear", "vague", "ambiguous"],
+    ant: ["clear", "obvious", "famous"]
+  },
+  {
+    word: "prudent",
+    ipa: "/ˈpruː.dənt/",
+    pos: "adjective",
+    def: "careful and avoiding risks",
+    vn: "thận trọng, khôn ngoan",
+    ex: "It's prudent to save money for emergencies.",
+    syn: ["cautious", "wise", "judicious"],
+    ant: ["reckless", "rash", "imprudent"]
+  },
+];
+
+/* ============================================================
+   STATE — saved to localStorage
+   ============================================================ */
+const STATE_KEY = "vocab_garden_state_v1";
+const defaultState = () => ({
+  xp: 0,
+  gems: 0,
+  streak: 0,
+  lastDay: null,           // YYYY-MM-DD
+  weekDone: [false,false,false,false,false,false,false], // Mon..Sun
+  cardLevel: {},           // word -> 0..3 (0=new, 3=mastered)
+});
+
+let state;
+try {
+  state = JSON.parse(localStorage.getItem(STATE_KEY)) || defaultState();
+} catch { state = defaultState(); }
+
+function save(){ localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
+
+/* ============================================================
+   STREAK LOGIC
+   ============================================================ */
+function todayStr(){
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+function dayIndexMonFirst(date){
+  // Mon=0 .. Sun=6
+  let d = date.getDay(); // Sun=0..Sat=6
+  return (d + 6) % 7;
+}
+function bumpStreakIfNew(){
+  const today = todayStr();
+  if (state.lastDay === today) return false;
+  // check if last day was yesterday
+  if (state.lastDay) {
+    const last = new Date(state.lastDay);
+    const diff = (new Date(today) - last) / (1000*60*60*24);
+    if (diff === 1) state.streak += 1;
+    else state.streak = 1;
+  } else {
+    state.streak = 1;
+  }
+  state.lastDay = today;
+  // mark today's day cell
+  const idx = dayIndexMonFirst(new Date());
+  // reset week if it's monday and a fresh week, simple heuristic:
+  // we'll just mark today.
+  state.weekDone[idx] = true;
+  save();
+  return true;
+}
+
+/* ============================================================
+   RENDERING — top stats + week row
+   ============================================================ */
+function renderStats(){
+  document.getElementById("stat-streak").textContent = state.streak;
+  document.getElementById("stat-xp").textContent = state.xp;
+  document.getElementById("stat-gems").textContent = state.gems;
+}
+function renderWeek(){
+  const labels = ["M","T","W","T","F","S","S"];
+  const todayIdx = dayIndexMonFirst(new Date());
+  const row = document.getElementById("week-row");
+  row.innerHTML = "";
+  for (let i = 0; i < 7; i++) {
+    const cell = document.createElement("div");
+    cell.className = "day-cell";
+    if (state.weekDone[i]) cell.classList.add("done");
+    if (i === todayIdx) cell.classList.add("today");
+    cell.innerHTML = `<span class="label">${labels[i]}</span>${i===todayIdx?'★':(state.weekDone[i]?'✓':labels[i])}`;
+    row.appendChild(cell);
+  }
+}
+
+/* ============================================================
+   LIBRARY VIEW
+   ============================================================ */
+function renderLibrary(filter=""){
+  const grid = document.getElementById("vocab-grid");
+  const list = VOCAB.filter(w =>
+    !filter ||
+    w.word.toLowerCase().includes(filter.toLowerCase()) ||
+    w.vn.toLowerCase().includes(filter.toLowerCase())
+  );
+  grid.innerHTML = list.map(w => `
+    <div class="word-card" onclick="speak('${w.word}')">
+      <span class="tag">${w.pos}</span>
+      <div class="word">${w.word}</div>
+      <div class="ipa">
+        <span>${w.ipa}</span>
+        <button class="speak" onclick="event.stopPropagation(); speak('${w.word}')">🔊</button>
+      </div>
+      <div class="vn"><b>VN:</b> ${w.vn}</div>
+      <div class="meta">
+        <span><b>Syn:</b> ${w.syn.slice(0,2).join(", ")}</span>
+        <span><b>Ant:</b> ${w.ant.slice(0,2).join(", ")}</span>
+      </div>
+    </div>
+  `).join("") || `<div class="empty"><span class="em">🌵</span><div>No words match. Try another search!</div></div>`;
+}
+document.getElementById("search").addEventListener("input", e => renderLibrary(e.target.value));
+
+/* ============================================================
+   TTS — picks the best available English voice (works on phones)
+   ============================================================ */
+let cachedVoice = null;
+
+function pickEnglishVoice() {
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) return null;
+
+  // Priority order: prefer high-quality English voices
+  const preferences = [
+    v => v.lang === 'en-GB' && /female|samantha|kate|serena|martha|google/i.test(v.name),
+    v => v.lang === 'en-GB',
+    v => v.lang === 'en-US' && /female|samantha|karen|moira|google/i.test(v.name),
+    v => v.lang === 'en-US',
+    v => v.lang && v.lang.startsWith('en-'),
+    v => v.lang && v.lang.toLowerCase().startsWith('en'),
+  ];
+
+  for (const test of preferences) {
+    const match = voices.find(test);
+    if (match) return match;
+  }
+  return voices[0];
+}
+
+function speak(text){
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+
+  const doSpeak = () => {
+    const u = new SpeechSynthesisUtterance(text);
+    const voice = cachedVoice || pickEnglishVoice();
+    if (voice) {
+      u.voice = voice;
+      u.lang = voice.lang;
+      cachedVoice = voice;
+    } else {
+      u.lang = 'en-US';
+    }
+    u.rate = 0.9;
+    u.pitch = 1.0;
+    speechSynthesis.speak(u);
+  };
+
+  // Voices may not be loaded yet on mobile — wait if needed
+  if (speechSynthesis.getVoices().length === 0) {
+    speechSynthesis.addEventListener('voiceschanged', doSpeak, { once: true });
+    setTimeout(doSpeak, 300); // fallback in case the event never fires
+  } else {
+    doSpeak();
+  }
+}
+
+// Pre-load voices early so the first tap works smoothly on mobile
+if ('speechSynthesis' in window) {
+  speechSynthesis.getVoices();
+  speechSynthesis.addEventListener('voiceschanged', () => {
+    cachedVoice = pickEnglishVoice();
+  });
+}
+
+/* ============================================================
+   REVIEW (FLASHCARDS)
+   ============================================================ */
+let reviewQueue = [];
+let reviewIdx = 0;
+let reviewSize = 10;
+let cardFlipped = false;
+
+function buildReviewQueue(){
+  // Sort: lowest cardLevel first (new + struggling first)
+  const list = [...VOCAB];
+  list.sort((a,b) => (state.cardLevel[a.word]||0) - (state.cardLevel[b.word]||0));
+  reviewQueue = list.slice(0, reviewSize);
+  reviewIdx = 0;
+}
+function renderReview(){
+  if (reviewQueue.length === 0) buildReviewQueue();
+  if (reviewIdx >= reviewQueue.length) {
+    showReviewComplete();
+    return;
+  }
+  const w = reviewQueue[reviewIdx];
+  document.getElementById("fc-word").textContent = w.word;
+  document.getElementById("fc-ipa").textContent = w.ipa;
+  document.getElementById("fc-back").innerHTML = `
+    <div class="row">
+      <div class="label">Part of speech</div>
+      <div class="val"><i>${w.pos}</i></div>
+    </div>
+    <div class="row vn">
+      <div class="label">Vietnamese</div>
+      <div class="val">${w.vn}</div>
+    </div>
+    <div class="row">
+      <div class="label">Definition</div>
+      <div class="val">${w.def}</div>
+    </div>
+    <div class="row">
+      <div class="label">Example</div>
+      <div class="val"><i>"${w.ex}"</i></div>
+    </div>
+    <div class="row">
+      <div class="label">Synonyms</div>
+      <div class="chips">${w.syn.map(s => `<span class="chip syn">${s}</span>`).join("")}</div>
+    </div>
+    <div class="row">
+      <div class="label">Antonyms</div>
+      <div class="chips">${w.ant.map(s => `<span class="chip ant">${s}</span>`).join("")}</div>
+    </div>
+  `;
+  cardFlipped = false;
+  document.getElementById("flashcard").classList.remove("flipped");
+
+  document.getElementById("rev-progress").textContent = `Card ${reviewIdx+1} of ${reviewQueue.length}`;
+  document.getElementById("rev-fill").style.width = `${(reviewIdx/reviewQueue.length)*100}%`;
+}
+function flipCard(){
+  cardFlipped = !cardFlipped;
+  document.getElementById("flashcard").classList.toggle("flipped", cardFlipped);
+}
+function speakCurrent(){
+  if (reviewQueue[reviewIdx]) speak(reviewQueue[reviewIdx].word);
+}
+function rate(level){
+  const w = reviewQueue[reviewIdx];
+  if (!w) return;
+  const cur = state.cardLevel[w.word] || 0;
+  if (level === "again")     state.cardLevel[w.word] = Math.max(0, cur - 1);
+  else if (level === "good") state.cardLevel[w.word] = Math.min(3, cur + 1);
+  else if (level === "easy") state.cardLevel[w.word] = Math.min(3, cur + 2);
+
+  // rewards
+  if (level === "good") state.xp += 5;
+  if (level === "easy") state.xp += 8;
+  if (level === "again") state.xp += 2;
+
+  reviewIdx++;
+  save();
+  renderStats();
+  renderReview();
+}
+function showReviewComplete(){
+  const newStreak = bumpStreakIfNew();
+  state.gems += 3;
+  save();
+  renderStats();
+  renderWeek();
+
+  document.querySelector(".review-stage").innerHTML = `
+    <div class="results">
+      <div class="trophy">🌻</div>
+      <h2>Lovely work!</h2>
+      <div class="score-big">${reviewSize}<small>/cards</small></div>
+      <p class="msg">${newStreak ? `Streak extended! You're on a <b>${state.streak}-day</b> roll. 🔥` : "You've already practiced today — well done for coming back!"}</p>
+      <div class="cta-row" style="justify-content: center;">
+        <button class="btn mint" onclick="startReview()">Review again</button>
+        <button class="btn ghost" onclick="setView('test')">Take a test ✏️</button>
+      </div>
+    </div>
+  `;
+  if (newStreak) confetti();
+}
+function startReview(){
+  // restore the review stage HTML if it was replaced by results
+  document.querySelector(".review-stage").innerHTML = `
+    <div class="progress-bar"><div class="fill" id="rev-fill"></div></div>
+    <div class="progress-text" id="rev-progress">Card 1 of 10</div>
+    <div class="flashcard-wrap">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="face front">
+          <div class="word" id="fc-word">—</div>
+          <div class="ipa">
+            <span id="fc-ipa">—</span>
+            <button class="speak" onclick="event.stopPropagation(); speakCurrent()">🔊</button>
+          </div>
+          <div class="hint">tap card to reveal</div>
+        </div>
+        <div class="face back" id="fc-back"></div>
+      </div>
+    </div>
+    <div class="review-actions">
+      <button class="again" onclick="rate('again')"><span class="em">🌱</span>Again</button>
+      <button class="good"  onclick="rate('good')"><span class="em">🌿</span>Good</button>
+      <button class="easy"  onclick="rate('easy')"><span class="em">🌳</span>Easy</button>
+    </div>
+  `;
+  buildReviewQueue();
+  renderReview();
+}
+
+/* ============================================================
+   TEST (multiple-choice quiz)
+   ============================================================ */
+let testQuestions = [];
+let testIdx = 0;
+let testCorrect = 0;
+let testSize = 10;
+let testMode = "en-vn"; // "en-vn", "vn-en", "synonym"
+
+function renderTestSetup(){
+  document.getElementById("test-container").innerHTML = `
+    <div class="test-setup">
+      <h2>Quick Test ✏️</h2>
+      <p>Pick how many questions and what to practice.</p>
+      <div class="options-row" id="test-len">
+        <button class="opt" data-n="5">5 questions</button>
+        <button class="opt selected" data-n="10">10 questions</button>
+        <button class="opt" data-n="15">15 questions</button>
+      </div>
+      <div class="options-row" id="test-mode">
+        <button class="opt selected" data-m="en-vn">English → Vietnamese</button>
+        <button class="opt" data-m="vn-en">Vietnamese → English</button>
+        <button class="opt" data-m="synonym">Find the synonym</button>
+      </div>
+      <button class="btn sun" onclick="startTest()" style="font-size:16px; padding:14px 28px;">Begin test →</button>
+    </div>
+  `;
+  // wire up
+  document.getElementById("test-len").addEventListener("click", e => {
+    if (e.target.dataset.n) {
+      [...e.currentTarget.children].forEach(b => b.classList.remove("selected"));
+      e.target.classList.add("selected");
+      testSize = parseInt(e.target.dataset.n);
+    }
+  });
+  document.getElementById("test-mode").addEventListener("click", e => {
+    if (e.target.dataset.m) {
+      [...e.currentTarget.children].forEach(b => b.classList.remove("selected"));
+      e.target.classList.add("selected");
+      testMode = e.target.dataset.m;
+    }
+  });
+}
+
+function buildTest(){
+  const shuffled = [...VOCAB].sort(() => Math.random() - 0.5);
+  testQuestions = shuffled.slice(0, testSize).map(w => {
+    const others = VOCAB.filter(x => x.word !== w.word).sort(() => Math.random()-0.5).slice(0,3);
+    let prompt, ipa, correct, options;
+    if (testMode === "en-vn") {
+      prompt = w.word; ipa = w.ipa; correct = w.vn;
+      options = [...others.map(o => o.vn), w.vn].sort(() => Math.random()-0.5);
+    } else if (testMode === "vn-en") {
+      prompt = w.vn; ipa = ""; correct = w.word;
+      options = [...others.map(o => o.word), w.word].sort(() => Math.random()-0.5);
+    } else { // synonym
+      prompt = w.word; ipa = w.ipa; correct = w.syn[0];
+      options = [...others.map(o => o.syn[0]), w.syn[0]].sort(() => Math.random()-0.5);
+    }
+    return { prompt, ipa, correct, options, w };
+  });
+  testIdx = 0;
+  testCorrect = 0;
+}
+
+function renderTestQuestion(){
+  if (testIdx >= testQuestions.length) { showTestResults(); return; }
+  const q = testQuestions[testIdx];
+  const letters = ["A","B","C","D"];
+  const speakBtn = (testMode === "en-vn" || testMode === "synonym")
+    ? `<button class="speak" onclick="speak('${q.prompt}')" style="margin-left:10px; width:32px; height:32px; border:2px solid var(--ink); border-radius:50%; background:var(--butter); display:inline-grid; place-items:center;">🔊</button>`
+    : "";
+  document.getElementById("test-container").innerHTML = `
+    <div class="test-card">
+      <div class="q-num">Question ${testIdx+1} of ${testQuestions.length}</div>
+      <div class="q-text">${q.prompt}${speakBtn}</div>
+      ${q.ipa ? `<div class="q-ipa">${q.ipa}</div>` : ""}
+      <div class="options">
+        ${q.options.map((o,i) => `
+          <button class="option" onclick="answerTest(this, ${i})">
+            <span class="letter">${letters[i]}</span>
+            <span>${o}</span>
+          </button>
+        `).join("")}
+      </div>
+      <div class="feedback" id="test-feedback"></div>
+    </div>
+  `;
+}
+
+function answerTest(btn, idx){
+  const q = testQuestions[testIdx];
+  const chosen = q.options[idx];
+  const all = btn.parentElement.querySelectorAll(".option");
+  all.forEach(b => b.disabled = true);
+  const fb = document.getElementById("test-feedback");
+  if (chosen === q.correct) {
+    btn.classList.add("correct");
+    testCorrect++;
+    state.xp += 6;
+    fb.className = "feedback show right";
+    fb.innerHTML = `<span class="em">🌟</span> Correct! <i style="margin-left:auto; opacity:.7;">+6 XP</i>`;
+  } else {
+    btn.classList.add("wrong");
+    all.forEach(b => { if (b.textContent.trim().endsWith(q.correct)) b.classList.add("correct"); });
+    fb.className = "feedback show wrong";
+    fb.innerHTML = `<span class="em">🌧️</span> The answer is <b style="margin-left:4px;">${q.correct}</b>`;
+  }
+  save(); renderStats();
+  setTimeout(() => { testIdx++; renderTestQuestion(); }, 1400);
+}
+
+function showTestResults(){
+  const pct = Math.round((testCorrect / testQuestions.length) * 100);
+  let trophy = "🌱", msg = "Keep watering — every word counts!";
+  if (pct >= 50) { trophy = "🌿"; msg = "Nice progress! A few more reviews and you'll have these mastered."; }
+  if (pct >= 75) { trophy = "🌻"; msg = "Lovely! You're really blooming."; }
+  if (pct === 100) { trophy = "🏆"; msg = "Perfect score! You're a vocabulary champion. 🎉"; }
+  state.gems += Math.floor(pct/20);
+  bumpStreakIfNew();
+  save(); renderStats(); renderWeek();
+  document.getElementById("test-container").innerHTML = `
+    <div class="results">
+      <div class="trophy">${trophy}</div>
+      <h2>Test complete!</h2>
+      <div class="score-big">${testCorrect}<small>/${testQuestions.length}</small></div>
+      <p class="msg">${msg}</p>
+      <div class="cta-row" style="justify-content: center;">
+        <button class="btn mint" onclick="renderTestSetup()">Take another</button>
+        <button class="btn ghost" onclick="setView('library')">Back to library</button>
+      </div>
+    </div>
+  `;
+  if (pct >= 75) confetti();
+}
+
+function startTest(){
+  buildTest();
+  renderTestQuestion();
+}
+
+/* ============================================================
+   CONFETTI 🎉
+   ============================================================ */
+function confetti(){
+  const colors = ["#FF8A7A","#FFC857","#6FCF97","#D4C5F9","#FFB5C5","#B5DCFF"];
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    const size = 6 + Math.random() * 8;
+    c.style.width = size + "px";
+    c.style.height = size + "px";
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.border = "1.5px solid #3B2A2F";
+    c.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
+    c.style.left = (Math.random()*100) + "vw";
+    c.style.top = "-20px";
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    const dur = 1500 + Math.random()*1500;
+    c.animate([
+      { transform: c.style.transform + " translateY(0)", opacity: 1 },
+      { transform: c.style.transform + ` translate(${(Math.random()-0.5)*200}px, 110vh) rotate(${Math.random()*720}deg)`, opacity: 0.4 }
+    ], { duration: dur, easing: "cubic-bezier(.3, .7, .4, 1)" });
+    setTimeout(() => c.remove(), dur);
+  }
+}
+
+/* ============================================================
+   VIEW SWITCHING
+   ============================================================ */
+function setView(name){
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById("view-" + name).classList.add("active");
+  document.querySelectorAll("nav.tabs button").forEach(b => {
+    b.classList.toggle("active", b.dataset.view === name);
+  });
+  if (name === "review") {
+    if (!document.getElementById("flashcard")) startReview();
+    else { buildReviewQueue(); renderReview(); }
+  }
+  if (name === "test") {
+    renderTestSetup();
+  }
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+document.querySelectorAll("nav.tabs button").forEach(b => {
+  b.addEventListener("click", () => setView(b.dataset.view));
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderStats();
+renderWeek();
+renderLibrary();
+buildReviewQueue();
+renderReview();
+</script>
+
+</body>
+</html>
